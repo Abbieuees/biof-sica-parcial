@@ -1,2 +1,2 @@
-# biof-sica-parcial
+# biofisica-parcial
 Parcial final biofísica 

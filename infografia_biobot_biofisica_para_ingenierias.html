@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bio-Bot Explorador de Entornos Extremos – Parcial #3</title>
+<style>
+  :root{
+    --bg:#0d1420; --panel:#152033; --panel2:#1b2a42; --ink:#e8eef7; --muted:#9fb0c8;
+    --a:#3ddc97; --b:#ffb347; --c:#5ab0ff; --warn:#ff5d73; --line:#2b3d5c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5}
+  header{padding:28px 20px 20px;text-align:center;background:linear-gradient(135deg,#13233d,#0d1420 60%);border-bottom:1px solid var(--line)}
+  header .uni{font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  header h1{margin:8px 0 4px;font-size:clamp(1.5rem,4vw,2.4rem)}
+  header h1 span{color:var(--a)}
+  header p{margin:0;color:var(--muted);font-size:.95rem}
+  .meta{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:14px}
+  .chip{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.8rem;color:var(--muted)}
+  main{max-width:1100px;margin:0 auto;padding:20px;display:grid;gap:20px}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+  h2{margin:0 0 4px;font-size:1.3rem;display:flex;align-items:center;gap:10px}
+  h2 .num{background:var(--a);color:#0d1420;border-radius:8px;padding:2px 10px;font-size:.9rem}
+  .pts{color:var(--muted);font-size:.85rem;margin-bottom:14px}
+  h3{margin:16px 0 8px;font-size:1.02rem;color:var(--c)}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .card h4{margin:0 0 6px;font-size:.95rem}
+  .big{font-size:1.6rem;font-weight:700}
+  .eq{font-family:Consolas,"Courier New",monospace;background:#0f1828;border-left:3px solid var(--c);padding:8px 12px;border-radius:6px;margin:8px 0;overflow-x:auto;white-space:nowrap}
+  table{width:100%;border-collapse:collapse;font-size:.92rem}
+  th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--muted);font-weight:600}
+  .a{color:var(--a)} .b{color:var(--b)} .c{color:var(--c)} .w{color:var(--warn)}
+  .tag{display:inline-block;font-size:.75rem;padding:2px 8px;border-radius:6px;background:#0f1828;border:1px solid var(--line);margin-right:4px}
+  svg{width:100%;height:auto;display:block}
+  .placeholder{border:2px dashed var(--line);border-radius:12px;padding:28px;text-align:center;color:var(--muted);font-size:.9rem}
+  .sim{background:#0f1828;border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:12px}
+  .sim label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:4px}
+  input[type=range]{width:100%;accent-color:var(--c)}
+  .status{margin-top:8px;padding:8px 12px;border-radius:8px;font-weight:600;font-size:.92rem}
+  .ok{background:rgba(61,220,151,.15);color:var(--a)}
+  .bad{background:rgba(255,93,115,.15);color:var(--warn)}
+  .bars{display:grid;gap:6px;margin-top:8px}
+  .bar{height:20px;border-radius:5px;background:#22324e;position:relative;overflow:hidden}
+  .bar>div{height:100%;transition:width .3s}
+  .bar span{position:absolute;left:8px;top:0;font-size:.75rem;line-height:20px;color:#0d1420;font-weight:700}
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:640px){.compare{grid-template-columns:1fr}}
+  ul{margin:6px 0;padding-left:20px}
+  li{margin:3px 0}
+  .shield{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+  .shield .card{border-top:4px solid var(--c)}
+  .spectrum{display:flex;border-radius:8px;overflow:hidden;font-size:.72rem;text-align:center;font-weight:700;margin:10px 0}
+  .spectrum div{padding:10px 2px;flex:1;color:#0d1420}
+  .log{background:#0f1828;border-radius:10px;padding:12px;border:1px solid var(--line);font-size:.9rem}
+  .log b{color:var(--b)}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:20px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="uni">Universidad Evangélica de El Salvador · Biofísica para Ingenierías</div>
+  <h1>🤖 <span>Bio-Bot</span> Explorador de Entornos Extremos</h1>
+  <p>Subsistema sensorial, energético y de protección radiológica / electromagnética</p>
+  <div class="meta">
+    <span class="chip">Parcial #3 · Unidad 4</span>
+    <span class="chip">Ciclo II-2026 · 12/11/2026</span>
+    <span class="chip">Facilitadora: Liliana Jiménez Soriano</span>
+    <span class="chip">Estudiantes: Abbie Elena Cordova Cortez · Edgar Josue Hernández González</span>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ ETAPA 1 ============ -->
+<section>
+  <h2><span class="num">1</span> Modelado eléctrico y Ley de Ohm</h2>
+  <div class="pts">1.50 pts · Batería 24 V DC · 3 subsistemas en paralelo (redundancia: si uno falla, los demás siguen operando)</div>
+
+  <svg viewBox="0 0 640 230" aria-label="Diagrama del circuito en paralelo">
+    <rect x="0" y="0" width="640" height="230" fill="#0f1828" rx="12"/>
+    <!-- battery -->
+    <line x1="60" y1="40" x2="60" y2="95" stroke="#9fb0c8" stroke-width="3"/>
+    <line x1="40" y1="95" x2="80" y2="95" stroke="#e8eef7" stroke-width="4"/>
+    <line x1="48" y1="108" x2="72" y2="108" stroke="#e8eef7" stroke-width="4"/>
+    <line x1="60" y1="108" x2="60" y2="190" stroke="#9fb0c8" stroke-width="3"/>
+    <text x="88" y="106" fill="#e8eef7" font-size="15" font-weight="700">24 V</text>
+    <text x="30" y="88" fill="#3ddc97" font-size="13">+</text>
+    <!-- top / bottom rails -->
+    <line x1="60" y1="40" x2="560" y2="40" stroke="#9fb0c8" stroke-width="3"/>
+    <line x1="60" y1="190" x2="560" y2="190" stroke="#9fb0c8" stroke-width="3"/>
+    <text x="150" y="30" fill="#9fb0c8" font-size="12">I_T = 350 mA →</text>
+    <!-- branches -->
+    <g>
+      <line x1="220" y1="40" x2="220" y2="80" stroke="#3ddc97" stroke-width="3"/>
+      <rect x="205" y="80" width="30" height="70" rx="4" fill="none" stroke="#3ddc97" stroke-width="3"/>
+      <line x1="220" y1="150" x2="220" y2="190" stroke="#3ddc97" stroke-width="3"/>
+      <text x="245" y="105" fill="#3ddc97" font-size="13" font-weight="700">A · 480 Ω</text>
+      <text x="245" y="123" fill="#9fb0c8" font-size="12">Geiger-Müller</text>
+      <text x="245" y="141" fill="#e8eef7" font-size="12">50 mA</text>
+    </g>
+    <g>
+      <line x1="380" y1="40" x2="380" y2="80" stroke="#ffb347" stroke-width="3"/>
+      <rect x="365" y="80" width="30" height="70" rx="4" fill="none" stroke="#ffb347" stroke-width="3"/>
+      <line x1="380" y1="150" x2="380" y2="190" stroke="#ffb347" stroke-width="3"/>
+      <text x="405" y="105" fill="#ffb347" font-size="13" font-weight="700">B · 120 Ω</text>
+      <text x="405" y="123" fill="#9fb0c8" font-size="12">Actuador agarre</text>
+      <text x="405" y="141" fill="#e8eef7" font-size="12">200 mA</text>
+    </g>
+    <g>
+      <line x1="560" y1="40" x2="560" y2="80" stroke="#5ab0ff" stroke-width="3"/>
+      <rect x="545" y="80" width="30" height="70" rx="4" fill="none" stroke="#5ab0ff" stroke-width="3"/>
+      <line x1="560" y1="150" x2="560" y2="190" stroke="#5ab0ff" stroke-width="3"/>
+      <text x="480" y="215" fill="#5ab0ff" font-size="13" font-weight="700">C · 240 Ω · Telemetría RF · 100 mA</text>
+    </g>
+  </svg>
+
+  <h3>Cálculos (en paralelo, cada rama recibe los 24 V)</h3>
+  <div class="eq">I = V / R</div>
+  <table>
+    <tr><th>Subsistema</th><th>R (Ω)</th><th>Cálculo</th><th>Corriente</th><th>Potencia</th></tr>
+    <tr><td class="a">A · Sensor Geiger-Müller</td><td>480</td><td>24 / 480</td><td><b>0.050 A</b> (50 mA)</td><td>1.2 W</td></tr>
+    <tr><td class="b">B · Actuador electromagnético</td><td>120</td><td>24 / 120</td><td><b>0.200 A</b> (200 mA)</td><td>4.8 W</td></tr>
+    <tr><td class="c">C · Telemetría RF</td><td>240</td><td>24 / 240</td><td><b>0.100 A</b> (100 mA)</td><td>2.4 W</td></tr>
+    <tr><td><b>Total</b></td><td><b>68.57</b></td><td>0.05 + 0.20 + 0.10</td><td><b>0.350 A</b> (350 mA)</td><td><b>8.4 W</b></td></tr>
+  </table>
+  <div class="eq">1/R<sub>eq</sub> = 1/480 + 1/120 + 1/240 = (1 + 4 + 2)/480 = 7/480  →  R<sub>eq</sub> = 480/7 ≈ 68.57 Ω</div>
+  <div class="eq">Comprobación: R<sub>eq</sub> = V / I<sub>T</sub> = 24 / 0.35 = 68.57 Ω ✔</div>
+  <p style="color:var(--muted);font-size:.9rem">Observación: R<sub>eq</sub> (68.57 Ω) es menor que la resistencia más pequeña (120 Ω), como se espera en paralelo. El actuador B consume el 57 % de la corriente total: es el subsistema crítico para la autonomía de la batería.</p>
+
+  <div class="sim">
+    <h4 style="margin:0 0 8px">⚡ Simulación interactiva: falla de un subsistema</h4>
+    <label><input type="checkbox" id="swA" checked> Subsistema A activo</label>
+    <label><input type="checkbox" id="swB" checked> Subsistema B activo</label>
+    <label><input type="checkbox" id="swC" checked> Subsistema C activo</label>
+    <div class="bars">
+      <div class="bar"><div id="barA" style="background:var(--a)"></div><span id="txtA"></span></div>
+      <div class="bar"><div id="barB" style="background:var(--b)"></div><span id="txtB"></span></div>
+      <div class="bar"><div id="barC" style="background:var(--c)"></div><span id="txtC"></span></div>
+    </div>
+    <div class="status ok" id="totElec"></div>
+  </div>
+
+</section>
+
+<!-- ============ ETAPA 2 ============ -->
+<section>
+  <h2><span class="num">2</span> Diseño biomimético comparativo</h2>
+  <div class="pts">2.00 pts · Especie elegida: <b>Anguila eléctrica</b> (<i>Electrophorus electricus</i>)</div>
+
+  <div class="grid">
+    <div class="card"><h4>🐟 Electrocitos</h4>Células modificadas que generan ≈ 0.15 V cada una mediante bombas de Na⁺/K⁺ y canales iónicos.</div>
+    <div class="card"><h4>🔋 Serie → Voltaje</h4>~4,000–6,000 electrocitos en serie suman hasta <b>≈ 600 V</b>.</div>
+    <div class="card"><h4>🔀 Paralelo → Corriente</h4>Columnas en paralelo aumentan la corriente de descarga, igual que las ramas del Bio-Bot.</div>
+    <div class="card"><h4>📡 Electrolocalización</h4>Descargas débiles crean un campo eléctrico; los objetos lo distorsionan y la anguila los "ve".</div>
+  </div>
+
+  <h3>Similitudes físicas</h3>
+  <ul>
+    <li><b>Ley de Ohm y circuitos:</b> los electrocitos son fuentes de fem conectadas en serie/paralelo; la batería del robot alimenta ramas en paralelo con el mismo principio (V = I·R, suma de corrientes).</li>
+    <li><b>Detección por campos:</b> la electrolocalización equivale al sensado activo del robot (telemetría RF y sensor Geiger detectan perturbaciones del entorno).</li>
+    <li><b>Aislamiento:</b> la anguila tiene tejido adiposo aislante que protege sus órganos vitales; el robot necesita aislamiento dieléctrico y blindaje en el chasis.</li>
+  </ul>
+
+  <h3>Diferencias de ingeniería</h3>
+  <div class="compare">
+    <div class="card" style="border-top:4px solid var(--a)">
+      <h4>🧬 Sistema biológico</h4>
+      <ul>
+        <li><b>+</b> Autorreparación y recarga metabólica</li>
+        <li><b>+</b> Modula voltaje según la función (caza / detección)</li>
+        <li><b>–</b> Descarga de alta potencia que se agota en segundos</li>
+        <li><b>–</b> Sensible a temperatura y radiación</li>
+      </ul>
+    </div>
+    <div class="card" style="border-top:4px solid var(--c)">
+      <h4>⚙️ Sistema electrónico</h4>
+      <ul>
+        <li><b>+</b> Voltaje estable (24 V) y controlable</li>
+        <li><b>+</b> Se puede blindar contra radiación</li>
+        <li><b>–</b> No se autorrepara</li>
+        <li><b>–</b> Una sola batería es un punto único de falla</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>🔧 Mejora traducida al diseño del robot</h3>
+  <ul>
+    <li><b>Batería modular tipo "electrocito":</b> celdas en serie (voltaje) y en paralelo (corriente) con un sistema BMS que aísla celdas dañadas y mantiene la operación.</li>
+    <li><b>Modo dual de energía:</b> bajo consumo para sensado continuo y pulsos de alta corriente solo cuando el actuador B necesita agarrar.</li>
+    <li><b>Sensado activo por campo eléctrico</b> para detectar obstáculos cuando la radiación degrada los sensores ópticos.</li>
+  </ul>
+</section>
+
+<!-- ============ ETAPA 3 ============ -->
+<section>
+  <h2><span class="num">3</span> Protocolo de seguridad radiológica y electromagnética</h2>
+  <div class="pts">1.50 pts · Fuente puntual: 1,200 mR a 1 m · Límite de los sensores ópticos: 75 mR</div>
+
+  <h3>Distancia mínima segura (Ley de la Inversa del Cuadrado)</h3>
+  <div class="eq">I₁ · d₁² = I₂ · d₂²</div>
+  <div class="eq">d₂ = d₁ · √(I₁ / I₂) = 1 m · √(1200 / 75) = √16 = <b>4 m</b></div>
+  <div class="grid">
+    <div class="card"><h4>Resultado</h4><div class="big c">d ≥ 4 m</div>A 4 m la dosis es exactamente 75 mR (el límite).</div>
+    <div class="card"><h4>Criterio de ingeniería</h4><div class="big a">5 m</div>Distancia operativa recomendada con margen de seguridad (≈ 48 mR).</div>
+    <div class="card"><h4>Zona prohibida</h4><div class="big w">&lt; 4 m</div>Daño irreversible a los sensores ópticos.</div>
+  </div>
+
+  <div class="sim">
+    <h4 style="margin:0 0 8px">☢️ Simulación interactiva: dosis vs. distancia</h4>
+    <label for="dist">Distancia del robot a la fuente: <b id="dval"></b></label>
+    <input type="range" id="dist" min="0.5" max="10" step="0.1" value="4">
+    <div class="status" id="dose"></div>
+  </div>
+
+  <h3>Selección de blindaje para el chasis</h3>
+  <div class="shield">
+    <div class="card" style="border-top-color:var(--a)"><h4>α Alfa</h4>Partículas pesadas (2p+2n), poco penetrantes.<br><span class="tag">Papel</span><span class="tag">Carcasa de Al</span><br>La carcasa exterior basta.</div>
+    <div class="card" style="border-top-color:var(--b)"><h4>β Beta</h4>Electrones rápidos.<br><span class="tag">Aluminio 3–5 mm</span><span class="tag">Acrílico</span><br>Se usan materiales de bajo Z para evitar rayos X de frenado (bremsstrahlung).</div>
+    <div class="card" style="border-top-color:var(--c)"><h4>γ Gamma</h4>Fotones de alta energía, muy penetrantes.<br><span class="tag">Plomo</span><span class="tag">Tungsteno</span><span class="tag">Acero denso</span><br>Alta densidad y alto Z.</div>
+    <div class="card" style="border-top-color:var(--warn)"><h4>n Neutrones</h4>Sin carga, muy penetrantes.<br><span class="tag">Polietileno borado</span><span class="tag">Agua</span><span class="tag">Concreto</span><br>El hidrógeno los frena, el boro los captura y una capa de plomo detiene los γ secundarios.</div>
+  </div>
+  <p style="font-size:.9rem;color:var(--muted)"><b>Chasis propuesto (de afuera hacia adentro):</b> aluminio (α, β) → polietileno borado (n) → plomo/tungsteno alrededor de los sensores ópticos y la electrónica (γ).</p>
+
+  <h3>¿Por qué la comunicación RF / microondas no altera el ADN?</h3>
+  <div class="spectrum">
+    <div style="background:#5ab0ff">Radio</div><div style="background:#7cc4ff">Microondas</div><div style="background:#9fe0c0">IR</div><div style="background:#d8f07a">Visible</div>
+    <div style="background:#ffb347">UV</div><div style="background:#ff8a5c">Rayos X</div><div style="background:#ff5d73">Gamma</div>
+  </div>
+  <div style="display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-top:-6px"><span>← NO ionizante · baja energía</span><span>IONIZANTE · alta energía →</span></div>
+  <div class="eq">E = h · f = (6.626×10⁻³⁴ J·s)(2.4×10⁹ Hz) ≈ 1.6×10⁻²⁴ J ≈ 1×10⁻⁵ eV</div>
+  <ul>
+    <li>Para ionizar un átomo y romper enlaces del ADN se necesitan unos <b>10 eV o más</b>.</li>
+    <li>Un fotón de RF tiene <b>~1 millón de veces menos energía</b>: no puede arrancar electrones, sin importar cuántos fotones haya. El efecto depende de la frecuencia, no de la intensidad.</li>
+    <li>Su único efecto biológico es un <b>calentamiento leve</b>, que se controla respetando los límites de SAR (tasa de absorción específica).</li>
+  </ul>
+</section>
+
+<!-- ============ ETAPA 4 ============ -->
+<section>
+  <h2><span class="num">4</span> Bitácora de co-creación (uso ético y crítico de la IA)</h2>
+  <div class="pts">1.00 pts · Herramienta utilizada: Claude (Anthropic)</div>
+  <div class="log">
+    <p><b>Prompt utilizado:</b> <i>"Genera un archivo de apoyo HTML en base a la información recopilada de las distintas mediciones y conceptos no tocados para mejorar las respuestas."</i></p>
+    <p><b>Respuesta de la IA:</b> Calculó la distancia mínima con la Ley de la Inversa del Cuadrado y obtuvo d = 4 m.</p>
+    <p><b>Corrección / mejora del equipo:</b> A 4 m el sensor recibe exactamente 75 mR, que es justo el límite de daño. Como ingenieros definimos una <b>distancia operativa de 5 m</b> (≈ 48 mR) con margen de seguridad. Además, la ley supone una fuente puntual sin atenuación del aire ni dispersión, así que en campo se debe validar con el propio sensor Geiger del robot.</p>  </div>
+</section>
+
+</main>
+
+<footer>Bio-Bot Explorador · Parcial #3 Biofísica para Ingenierías · UEES · Ciclo II-2026</footer>
+
+<script>
+  // Etapa 1: falla de subsistemas
+  const V = 24, R = {A:480, B:120, C:240};
+  function updCircuit(){
+    let tot = 0;
+    for (const k of ["A","B","C"]){
+      const on = document.getElementById("sw"+k).checked;
+      const I = on ? V/R[k] : 0;
+      tot += I;
+      document.getElementById("bar"+k).style.width = (I/0.2*100) + "%";
+      document.getElementById("txt"+k).textContent = k + ": " + (I*1000).toFixed(0) + " mA";
+      document.getElementById("txt"+k).style.color = on ? "#0d1420" : "#9fb0c8";
+    }
+    const el = document.getElementById("totElec");
+    const req = tot > 0 ? (V/tot).toFixed(2) + " Ω" : "∞ (circuito abierto)";
+    el.textContent = "Corriente total: " + (tot*1000).toFixed(0) + " mA · Req = " + req + " · Cada rama activa sigue recibiendo 24 V";
+    el.className = "status " + (tot > 0 ? "ok" : "bad");
+  }
+  ["A","B","C"].forEach(k => document.getElementById("sw"+k).addEventListener("change", updCircuit));
+  updCircuit();
+
+  // Etapa 3: dosis vs distancia
+  const slider = document.getElementById("dist");
+  function updDose(){
+    const d = parseFloat(slider.value);
+    const dose = 1200 / (d*d);
+    document.getElementById("dval").textContent = d.toFixed(1) + " m";
+    const el = document.getElementById("dose");
+    let msg = "Dosis recibida: " + dose.toFixed(1) + " mR → ";
+    if (dose > 75.0001){ msg += "⚠️ PELIGRO: daño irreversible a los sensores ópticos"; el.className = "status bad"; }
+    else if (dose > 60){ msg += "Límite: seguro, pero sin margen"; el.className = "status ok"; }
+    else { msg += "✅ Zona segura con margen"; el.className = "status ok"; }
+    el.textContent = msg;
+  }
+  slider.addEventListener("input", updDose);
+  updDose();
+</script>
+</body>
+</html>
